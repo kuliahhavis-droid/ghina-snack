@@ -1,0 +1,14 @@
+# Ignore backend from Vercel deployment uploads
+backend/
+node_modules/
+dist/
+.git/
+.github/
+README.md
+DOCUMENTATION.md
+ATTRIBUTIONS.md
+composer.json
+composer.lock
+vendor/
+pnpm-workspace.yaml
+default_shadcn_theme.css
