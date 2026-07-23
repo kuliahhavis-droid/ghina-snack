@@ -183,7 +183,8 @@ export default function Layout() {
               : 'md:pl-20'
         }`}
       >
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 py-3 shadow-xs backdrop-blur-md md:px-6">
+        {/* Top Header - Fixed on Mobile */}
+        <header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 py-3 shadow-xs backdrop-blur-md md:px-6">
           <div className="flex items-center gap-3">
             {/* Hamburger Button (Only Visible on Desktop) */}
             {!isMobile && (
@@ -216,13 +217,14 @@ export default function Layout() {
               <p className="text-sm font-semibold text-slate-800">{user?.name ?? 'User'}</p>
               <p className="text-xs text-slate-500 capitalize">{user?.role?.toLowerCase() ?? 'staff'}</p>
             </div>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 font-bold text-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 font-bold text-sm shrink-0">
               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
           </div>
         </header>
 
-        <main className={`flex-1 p-4 overflow-hidden ${isMobile ? 'pb-24' : 'md:p-6'}`}>
+        {/* Scrollable Main Content */}
+        <main className={`flex-1 p-4 overflow-x-hidden ${isMobile ? 'pb-28' : 'md:p-6'}`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -236,22 +238,22 @@ export default function Layout() {
           </AnimatePresence>
         </main>
 
-        {/* Mobile Floating Add Action Button */}
+        {/* Mobile Fixed Floating Add Action Button */}
         {isMobile && addAction && (
           <button
             type="button"
             onClick={() => navigate(addAction.path)}
-            className={`fixed bottom-20 right-4 z-30 flex items-center gap-2 rounded-full px-5 py-3 text-white shadow-lg font-medium text-sm transition-all ${addAction.className}`}
+            className={`fixed bottom-20 right-4 z-40 flex items-center gap-2 rounded-full px-5 py-3 text-white shadow-xl font-medium text-sm transition-all ${addAction.className}`}
           >
             <Plus className="h-5 w-5" />
             <span>{addAction.label}</span>
           </button>
         )}
 
-        {/* Mobile Horizontal Scrollable Bottom Navigation Bar */}
+        {/* Mobile Fixed Bottom Navigation Bar */}
         {isMobile && (
-          <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/90 bg-white/95 px-3 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] backdrop-blur-md">
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5 px-0.5">
+          <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200/90 bg-white/95 px-3 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md">
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5 px-0.5 max-w-full">
               {allMobileNavItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
