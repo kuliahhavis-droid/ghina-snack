@@ -80,22 +80,20 @@ export default function Layout() {
 
   const addAction =
     location.pathname === '/pemasukan'
-      ? { label: 'Tambah Pemasukan', path: '/pemasukan?add=1', className: 'from-[#65C466] to-[#1F6B3A]' }
+      ? { label: 'Tambah Pemasukan', path: '/pemasukan?add=1', className: 'bg-emerald-600 hover:bg-emerald-700' }
       : location.pathname === '/pengeluaran'
-        ? { label: 'Tambah Pengeluaran', path: '/pengeluaran?add=1', className: 'from-[#EF4444] to-[#DC2626]' }
+        ? { label: 'Tambah Pengeluaran', path: '/pengeluaran?add=1', className: 'bg-red-600 hover:bg-red-700' }
         : null;
 
-  const activeClasses = 'text-white';
-  const inactiveClasses = 'text-[#6B7280] hover:bg-[#F0FDF4]/60';
   const showText = isMobile ? true : sidebarOpen;
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA]">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
       {/* Mobile Drawer Overlay Backdrop */}
       {isMobile && sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity duration-200"
+          className="fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-xs transition-opacity"
         />
       )}
 
@@ -106,39 +104,37 @@ export default function Layout() {
           width: isMobile ? 288 : (sidebarOpen ? 288 : 80),
           x: isMobile && !sidebarOpen ? -288 : 0,
         }}
-        transition={{ duration: 0.22, ease: 'easeOut' }}
-        className="fixed inset-y-0 left-0 z-50 flex flex-col border-r border-[#65C466]/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] h-screen overflow-hidden"
+        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        className="fixed inset-y-0 left-0 z-50 flex flex-col border-r border-slate-200 bg-white h-screen overflow-hidden shadow-xs"
       >
-        <div className={`p-6 border-b border-[#65C466]/10 flex items-center ${showText ? 'justify-between' : 'justify-center'}`}>
+        {/* Logo Section */}
+        <div className={`px-6 py-5 border-b border-slate-100 flex items-center ${showText ? 'justify-between' : 'justify-center'}`}>
           <div className="flex items-center gap-3 shrink-0">
-            <img src={logoImg} alt="Ghina Snack Logo" className="h-11 w-auto object-contain shrink-0" />
+            <img src={logoImg} alt="Ghina Snack Logo" className="h-10 w-auto object-contain shrink-0" />
             {showText && (
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-[#F0FDF4] text-[#1F6B3A] rounded-md border border-[#65C466]/20 shrink-0">Finance</span>
+              <span className="text-xs font-semibold text-slate-800 tracking-tight">Ghina Snack</span>
             )}
           </div>
           {isMobile && sidebarOpen && (
             <button
               onClick={() => setSidebarOpen(false)}
-              className="p-1 rounded-lg hover:bg-slate-100 text-[#6B7280]"
+              className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           )}
         </div>
 
-        <nav className="flex-1 p-4 space-y-5 overflow-y-auto overflow-x-hidden">
+        {/* Navigation Section */}
+        <nav className="flex-1 p-4 space-y-6 overflow-y-auto overflow-x-hidden">
           {navGroups.map((group) => (
             <div key={group.title} className="space-y-1.5">
               {showText ? (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="px-4 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8] whitespace-nowrap"
-                >
+                <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                   {group.title}
-                </motion.p>
+                </p>
               ) : (
-                <div className="mx-2 my-2 border-t border-[#65C466]/10" />
+                <div className="mx-2 my-2 border-t border-slate-100" />
               )}
               <div className="space-y-1">
                 {group.items.map((item) => {
@@ -146,36 +142,23 @@ export default function Layout() {
                   const isActive = location.pathname === item.path;
 
                   return (
-                    <motion.button
+                    <button
                       key={item.path}
                       onClick={() => {
                         navigate(item.path);
                         if (isMobile) setSidebarOpen(false);
                       }}
-                      whileHover={{ x: showText ? 4 : 0 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`relative w-full flex items-center ${showText ? 'justify-start gap-3 px-4' : 'justify-center px-0'} py-2.5 min-h-11 rounded-xl transition-all duration-200 z-10 ${
-                        isActive ? activeClasses : inactiveClasses
+                      className={`relative w-full flex items-center ${showText ? 'justify-start gap-3 px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
+                        isActive
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
                       }`}
                     >
-                      {isActive && (
-                        <motion.div
-                          layoutId="sidebarActiveIndicator"
-                          className="absolute inset-0 bg-gradient-to-r from-[#65C466] to-[#1F6B3A] rounded-xl -z-10 shadow-[0_4px_12px_rgba(31,107,58,0.15)]"
-                          transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-                        />
-                      )}
-                      <Icon className={`w-5 h-5 shrink-0 transition-colors duration-200 ${isActive ? 'text-white' : 'text-[#94A3B8]'}`} />
+                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                       {showText && (
-                        <motion.span
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          className="font-medium text-sm transition-colors duration-200 whitespace-nowrap"
-                        >
-                          {item.label}
-                        </motion.span>
+                        <span className="whitespace-nowrap">{item.label}</span>
                       )}
-                    </motion.button>
+                    </button>
                   );
                 })}
               </div>
@@ -183,27 +166,21 @@ export default function Layout() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-[#65C466]/10">
-          <motion.button
+        {/* User Account / Logout */}
+        <div className="p-4 border-t border-slate-100">
+          <button
             onClick={handleLogout}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={`w-full flex items-center ${showText ? 'justify-start gap-3 px-4' : 'justify-center px-0'} py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all`}
+            className={`w-full flex items-center ${showText ? 'justify-start gap-3 px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-red-600 hover:bg-red-50 transition-all`}
           >
-            <LogOut className="w-5 h-5 shrink-0" />
+            <LogOut className="w-5 h-5 shrink-0 text-slate-400" />
             {showText && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="font-medium whitespace-nowrap"
-              >
-                Keluar
-              </motion.span>
+              <span className="whitespace-nowrap">Keluar</span>
             )}
-          </motion.button>
+          </button>
         </div>
       </motion.aside>
 
+      {/* Main Content Area */}
       <div
         className={`flex min-h-screen flex-col transition-all duration-200 ${
           isMobile
@@ -213,35 +190,33 @@ export default function Layout() {
               : 'md:pl-20'
         }`}
       >
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#65C466]/10 bg-white/95 px-4 py-4 shadow-sm backdrop-blur-xl md:px-6">
+        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 py-3.5 shadow-xs backdrop-blur-md md:px-6">
           <div className="flex items-center gap-3">
-            <motion.button
+            <button
               onClick={() => setSidebarOpen((current) => !current)}
-              whileHover={{ scale: 1.05, boxShadow: '0 0 0 8px rgba(101, 196, 102, 0.12)' }}
-              whileTap={{ scale: 0.95 }}
-              className="p-2 min-h-11 min-w-11 hover:bg-[#F0FDF4] rounded-xl transition-colors"
+              className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-600"
             >
               {sidebarOpen ? (
-                <X className="w-6 h-6 text-[#1F6B3A]" />
+                <X className="w-5 h-5" />
               ) : (
-                <Menu className="w-6 h-6 text-[#1F6B3A]" />
+                <Menu className="w-5 h-5" />
               )}
-            </motion.button>
+            </button>
             {isMobile && (
-              <div className="flex items-center gap-2 ml-1">
+              <div className="flex items-center gap-2.5 ml-1">
                 <img src={logoImg} alt="Ghina Snack Logo" className="h-8 w-auto object-contain" />
-                <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-[#F0FDF4] text-[#1F6B3A] rounded border border-[#65C466]/20">Finance</span>
+                <span className="text-sm font-bold text-slate-800">Ghina Snack</span>
               </div>
             )}
           </div>
 
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
-              <p className="text-sm font-medium text-[#1F2937]">{user?.name ?? 'User'}</p>
-              <p className="text-xs text-[#6B7280]">{user?.role ?? 'STAFF'}</p>
+              <p className="text-sm font-semibold text-slate-800">{user?.name ?? 'User'}</p>
+              <p className="text-xs text-slate-500 capitalize">{user?.role?.toLowerCase() ?? 'staff'}</p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#65C466] to-[#1F6B3A] shadow-md">
-              <User className="h-5 w-5 text-white" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 font-bold text-sm">
+              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
           </div>
         </header>
@@ -250,10 +225,10 @@ export default function Layout() {
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.15, ease: [0.24, 0.6, 0.4, 1] }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.12 }}
             >
               <Outlet />
             </motion.div>
@@ -261,20 +236,19 @@ export default function Layout() {
         </main>
 
         {isMobile && addAction && (
-          <motion.button
+          <button
             type="button"
             onClick={() => navigate(addAction.path)}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className={`fixed bottom-6 right-4 z-30 flex min-h-14 items-center gap-2 rounded-full bg-gradient-to-r px-5 py-3 text-white shadow-[0_18px_45px_rgba(31,107,58,0.28)] transition-all ${addAction.className}`}
+            className={`fixed bottom-6 right-4 z-30 flex items-center gap-2 rounded-full px-5 py-3 text-white shadow-lg font-medium text-sm transition-all ${addAction.className}`}
           >
             <Plus className="h-5 w-5" />
-            <span className="text-sm font-semibold">{addAction.label}</span>
-          </motion.button>
+            <span>{addAction.label}</span>
+          </button>
         )}
       </div>
     </div>
   );
 }
+
 
 
