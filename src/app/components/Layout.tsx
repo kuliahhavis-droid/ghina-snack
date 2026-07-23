@@ -61,14 +61,6 @@ const navGroups: NavGroup[] = [
   },
 ];
 
-const mobileNavItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-  { icon: TrendingUp, label: 'Pemasukan', path: '/pemasukan' },
-  { icon: TrendingDown, label: 'Pengeluaran', path: '/pengeluaran' },
-  { icon: FileText, label: 'Laporan', path: '/laporan' },
-  { icon: User, label: 'Profile', path: '/profile' },
-];
-
 export default function Layout() {
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -103,10 +95,11 @@ export default function Layout() {
       {isMobile && sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-20 bg-black/40 backdrop-blur-xs transition-opacity duration-200"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity duration-200"
         />
       )}
 
+      {/* Desktop & Mobile Drawer Sidebar */}
       <motion.aside
         initial={isMobile ? { x: -288 } : false}
         animate={{
@@ -114,7 +107,7 @@ export default function Layout() {
           x: isMobile && !sidebarOpen ? -288 : 0,
         }}
         transition={{ duration: 0.22, ease: 'easeOut' }}
-        className="fixed inset-y-0 left-0 z-30 flex flex-col border-r border-[#65C466]/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] h-screen overflow-hidden"
+        className="fixed inset-y-0 left-0 z-50 flex flex-col border-r border-[#65C466]/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] h-screen overflow-hidden"
       >
         <div className={`p-6 border-b border-[#65C466]/10 flex items-center ${showText ? 'justify-between' : 'justify-center'}`}>
           <div className="flex items-center gap-3 shrink-0">
@@ -253,7 +246,7 @@ export default function Layout() {
           </div>
         </header>
 
-        <main className="flex-1 p-4 pb-24 md:p-6 md:pb-6 overflow-hidden">
+        <main className="flex-1 p-4 md:p-6 overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -273,45 +266,15 @@ export default function Layout() {
             onClick={() => navigate(addAction.path)}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className={`fixed bottom-24 right-4 z-40 flex min-h-14 items-center gap-2 rounded-full bg-gradient-to-r px-5 py-3 text-white shadow-[0_18px_45px_rgba(31,107,58,0.28)] transition-all ${addAction.className}`}
+            className={`fixed bottom-6 right-4 z-30 flex min-h-14 items-center gap-2 rounded-full bg-gradient-to-r px-5 py-3 text-white shadow-[0_18px_45px_rgba(31,107,58,0.28)] transition-all ${addAction.className}`}
           >
             <Plus className="h-5 w-5" />
             <span className="text-sm font-semibold">{addAction.label}</span>
           </motion.button>
         )}
-
-        {isMobile && (
-          <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-[#65C466]/10 bg-white/95 px-3 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-10px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-            <div className="grid grid-cols-5 gap-1">
-              {mobileNavItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
-
-                return (
-                  <motion.button
-                    key={item.path}
-                    onClick={() => navigate(item.path)}
-                    whileTap={{ scale: 0.94 }}
-                    className={`relative flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium transition-colors duration-200 z-10 ${
-                      isActive ? 'text-[#1F6B3A]' : 'text-[#6B7280]'
-                    }`}
-                  >
-                    {isActive && (
-                      <motion.div
-                        layoutId="mobileActiveIndicator"
-                        className="absolute inset-0 bg-[#F0FDF4] rounded-2xl -z-10"
-                        transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-                      />
-                    )}
-                    <Icon className={`h-5 w-5 transition-colors duration-200 ${isActive ? 'text-[#1F6B3A]' : 'text-[#94A3B8]'}`} />
-                    <span>{item.label}</span>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </nav>
-        )}
       </div>
     </div>
   );
 }
+
+
