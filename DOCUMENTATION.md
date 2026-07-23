@@ -1,35 +1,35 @@
-# Dokumentasi Logika & Sistem Aplikasi - Ghina Snack Finance
+# DOKUMENTASI LENGKAP & SPESIFIKASI SISTEM - GHINA SNACK FINANCE
 
-Dokumentasi resmi ini menjelaskan secara menyeluruh arsitektur sistem, skema database, logika bisnis, alur kerja transaksi, sistem keamanan (RLS), serta endpoint API untuk **Ghina Snack Finance System**.
+Dokumentasi resmi ini menjelaskan secara menyeluruh arsitektur sistem, skema database relasional, alur kerja bisnis (end-to-end user flow), sistem keamanan (RLS), visualisasi analitik, serta panduan deployment untuk **Ghina Snack Finance System**.
 
 ---
 
-## 📋 Daftar Isi
+## 📋 DAFTAR ISI
 1. [Ikhtisar Sistem](#1-ikhtisar-sistem)
 2. [Arsitektur & Spesifikasi Teknologi](#2-arsitektur--spesifikasi-teknologi)
-3. [Skema Database & Pemetaan Tabel](#3-skema-database--pemetaan-tabel)
-4. [Logika Bisnis & Fitur Utama](#4-logika-bisnis--fitur-utama)
-   - [A. Manajemen Pemasukan & Perhitungan HPP](#a-manajemen-pemasukan--perhitungan-hpp)
-   - [B. Manajemen Pengeluaran](#b-manajemen-pengeluaran)
-   - [C. Sistem Piutang & Pelunasan Cicilan](#c-sistem-piutang--pelunasan-cicilan)
-   - [D. Analisis Finansial & Dashboard](#d-analisis-finansial--dashboard)
-   - [E. Laporan Keuangan & Ekspor (PDF/Excel)](#e-laporan-keuangan--ekspor-pdfexcel)
-   - [F. Keamanan & Row Level Security (RLS)](#f-keamanan--row-level-security-rls)
-5. [Struktur Folder & Komponen](#5-struktur-folder--komponen)
-6. [Audit Log & Tracing](#6-audit-log--tracing)
-7. [Panduan Instalasi & Maintenance](#7-panduan-instalasi--maintenance)
+3. [Skema Database & Pemetaan Tabel (ERD)](#3-skema-database--pemetaan-tabel-erd)
+4. [Logika Bisnis & Alur Kerja Sistem (End-to-End Flow)](#4-logika-bisnis--alur-kerja-sistem-end-to-end-flow)
+   - [A. Autentikasi Pengguna & Pembatasan Akses](#a-autentikasi-pengguna--pembatasan-akses)
+   - [B. Manajemen Pemasukan, HPP & Update Stok Otomatis](#b-manajemen-pemasukan-hpp--update-stok-otomatis)
+   - [C. Manajemen Pengeluaran Operasional](#c-manajemen-pengeluaran-operasional)
+   - [D. Sistem Piutang Tempo & Pelunasan Cicilan Reseller](#d-sistem-piutang-tempo--pelunasan-cicilan-reseller)
+   - [E. Analisis Finansial Lanjutan & Cash Flow Forecasting](#e-analisis-finansial-lanjutan--cash-flow-forecasting)
+   - [F. Ekspor Laporan Keuangan (PDF & CSV)](#f-ekspor-laporan-keuangan-pdf--csv)
+5. [Desain Antarmuka & Layar Responsif (UI/UX)](#5-desain-antarmuka--layar-responsif-uiux)
+6. [Keamanan, RLS, & Audit Trail](#6-keamanan-rls--audit-trail)
+7. [Panduan Instalasi & Deployment (Vercel & Supabase)](#7-panduan-instalasi--deployment-vercel--supabase)
 
 ---
 
-## 1. Ikhtisar Sistem
+## 1. IKHTISAR SISTEM
 
-**Ghina Snack Finance** adalah platform sistem pembukuan dan analisis keuangan terintegrasi yang dirancang khusus untuk usaha Manufaktur & Distribusi Makanan Ringan (Snack). Sistem ini memfasilitasi pencatatan arus kas (*cash flow*), perhitungan Harga Pokok Penjualan (HPP) otomatis, penyesuaian stok produk secara real-time, manajemen piutang tempo reseller, serta laporan laba rugi bulanan.
+**Ghina Snack Finance** adalah platform sistem pembukuan dan analisis keuangan terintegrasi yang dirancang khusus untuk usaha Manufaktur & Distribusi Makanan Ringan (*Snack*). Sistem ini memfasilitasi pencatatan arus kas (*cash flow*), perhitungan **Harga Pokok Penjualan (HPP)** otomatis per unit produk, pembaruan stok produk secara real-time, manajemen piutang tempo reseller, pelunasan cicilan, serta laporan laba rugi bulanan.
 
 ---
 
-## 2. Arsitektur & Spesifikasi Teknologi
+## 2. ARSITEKTUR & SPESIFIKASI TEKNOLOGI
 
-Sistem menggunakan arsitektur **Client-Cloud Architecture**:
+Sistem menggunakan arsitektur **Client-Cloud Decoupled Architecture**:
 
 ```mermaid
 graph TD
@@ -45,12 +45,12 @@ graph TD
     Prisma -.->|Direct DB Migration| SupaDB
 ```
 
-| Layer | Teknologi / Library | Fungsi Utama |
+| Layer / Komponen | Teknologi | Fungsi Utama |
 |---|---|---|
-| **Frontend Framework** | React 18 + TypeScript + Vite | Interface aplikasi single-page (SPA) cepat & responsif |
+| **Frontend Framework** | React 18.3.1 (TypeScript) | Interface aplikasi single-page (SPA) cepat & responsif |
+| **Build Tool & Bundler** | Vite 6.3.5 | Server pengembang cepat dan pengkompilasi kode produksi |
 | **Routing** | React Router v7 | Manajemen navigasi halaman & pembatasan rute terproteksi |
 | **Styling & UI** | Tailwind CSS v4 + Radix UI + Lucide Icons | Sistem desain modern dengan estetika visual tinggi |
-| **Animasi** | Motion (Framer Motion) | Transisi halaman, skeleton loader & micro-animations |
 | **Visualisasi Data** | Recharts v2 | Rendering grafik tren harian, bar chart, area chart, Pareto |
 | **Database Cloud** | Supabase PostgreSQL Cloud | Penyimpanan data relasional cloud terpusat |
 | **Autentikasi & RLS** | Supabase Auth + Postgres RLS | Keamanan autentikasi user dan Row Level Security |
@@ -58,7 +58,7 @@ graph TD
 
 ---
 
-## 3. Skema Database & Pemetaan Tabel
+## 3. SKEMA DATABASE & PEMETAAN TABEL (ERD)
 
 Database PostgreSQL di Supabase terdiri dari **9 tabel relasional utama**:
 
@@ -81,10 +81,9 @@ erDiagram
     income ||--o| receivables : "menghasilkan_piutang"
 ```
 
-### Penjelasan Tabel:
-
+### Rincian 9 Tabel Utama:
 1. **`users`**: Data pengguna sistem (Admin & Staff) beserta role-nya.
-2. **`categories`**: Kategori transaksi keuangan, dipisah berdasarkan tipe `INCOME` (Pemasukan) atau `EXPENSE` (Pengeluaran).
+2. **`categories`**: Kategori transaksi keuangan (`INCOME` atau `EXPENSE`).
 3. **`products`**: Master data produk snack (Stok, HPP/Modal per bungkus, dan Harga Jual).
 4. **`suppliers`**: Master data supplier bahan baku (Buah, Minyak, Gas, Plastik Kemasan).
 5. **`customers`**: Master data pelanggan & reseller grosir.
@@ -95,134 +94,79 @@ erDiagram
 
 ---
 
-## 4. Logika Bisnis & Fitur Utama
+## 4. LOGIKA BISNIS & ALUR KERJA SISTEM (END-TO-END FLOW)
 
-### A. Manajemen Pemasukan & Perhitungan HPP
+### A. Autentikasi Pengguna & Pembatasan Akses
+- Pengguna wajib login dengan email & password yang terverifikasi di Supabase Auth.
+- Rute terproteksi (`RequireAuth`) memastikan hanya user berstatus terautentikasi yang dapat mengakses dashboard dan menu transaksi.
+
+### B. Manajemen Pemasukan, HPP & Update Stok Otomatis
 Ketika transaksi **Pemasukan (Income)** dicatat:
 1. **Perhitungan HPP & Laba Bersih Transaksi**:
-   $$\text{HPP Cost} = \text{HPP Produk per Unit} \times \text{Jumlah Kuantitas Dijual}$$
+   $$\text{HPP Cost} = \text{HPP Produk per Unit} \times \text{Kuantitas (Qty)}$$
    $$\text{Profit Bersih} = \text{Total Nominal Pemasukan} - \text{HPP Cost}$$
 2. **Pengurangan Stok Otomatis**:
-   Jika transaksi berkaitan dengan produk tertentu, stok produk di tabel `products` akan otomatis berkurang sejumlah kuantitas yang dijual.
-3. **Sistem Penjualan Tempo (Piutang)**:
-   Jika status pembayaran dipilih `UNPAID` (Tempo) dan ada data `customerId`, sistem otomatis membuat record baru di tabel `receivables` dengan status `UNPAID`.
-4. **Pembalikan Stok Saat Hapus**:
-   Jika transaksi pemasukan dihapus, stok produk otomatis dikembalikan (*reverted*) dan record piutang terkait akan dihapus.
+   Stok produk di tabel `products` otomatis berkurang sejumlah kuantitas yang dijual.
+3. **Penjualan Tempo (Piutang)**:
+   Jika pembayaran dipilih `UNPAID` (Tempo), sistem otomatis membuat data piutang baru di tabel `receivables`.
 
-### B. Manajemen Pengeluaran
-Pencatatan **Pengeluaran (Expense)** mencakup:
-- Pemilihan kategori biaya (Biaya Bahan Baku, Minyak, Gas, Gaji Karyawan, Listrik, Packaging, Ongkir).
-- Opsional menghubungkan dengan Supplier dan Produk yang diproduksi.
-- Pengunggahan foto bukti nota/transfer (`proofUrl`).
+### C. Manajemen Pengeluaran Operasional
+- Mencatat biaya bahan baku, minyak, gas, gaji karyawan, listrik, packaging, dan transport.
+- Opsional menghubungkan transaksi dengan Supplier dan Produk terkait.
 
-### C. Sistem Piutang & Pelunasan Cicilan
-- Halaman **Pelanggan & Piutang** mengelola reseller yang mengambil produk secara tempo.
-- **Logika Cicilan (Pelunasan Piutang)**:
-  - Ketika reseller membayar cicilan/pelunasan, sistem memperbarui `paidAmount` di `receivables`.
-  - Jika `paidAmount` $\ge$ `amount`, status piutang berubah otomatis dari `PARTIAL` / `UNPAID` menjadi **`PAID`**.
+### D. Sistem Piutang Tempo & Pelunasan Cicilan Reseller
+- Ketika reseller membayar cicilan/pelunasan:
+  - Sistem memperbarui `paidAmount` di `receivables`.
+  - Jika `paidAmount` $\ge$ `amount`, status piutang berubah otomatis menjadi **`PAID`**.
   - Sistem secara otomatis mencatatkan transaksi **Pemasukan Baru** di tabel `income` sebagai pelunasan piutang.
 
-### D. Analisis Finansial & Dashboard
-Dashboard menyajikan metrik bisnis tingkat tinggi:
+### E. Analisis Finansial Lanjutan & Cash Flow Forecasting
 - **KPI Utama**: Total Pemasukan, Total Pengeluaran, Profit Bersih, dan Jumlah Transaksi.
 - **Grafik Tren Harian**: Area Chart visualisasi fluktuasi pemasukan vs pengeluaran harian.
-- **Breakdown Kategori**: Bar Chart pengeluaran berdasarkan kategori biaya.
-- **Laba Kotor vs Profit Bersih**: Tren komparatif 6 bulan terakhir.
 - **Cash Flow Forecasting**: Proyeksi estimasi pemasukan, pengeluaran, dan net cash bulan depan menggunakan rata-rata tren 3 bulan terakhir.
 - **Analisis Pareto (Hukum 80/20)**: Urutan kategori pengeluaran terbesar secara kumulatif untuk membantu efisiensi biaya.
 
-### E. Laporan Keuangan & Ekspor (PDF/Excel)
-- **Visualisasi Berdampingan**: Grafik Tren Profit (Line Chart) dan Perbandingan Pemasukan vs Pengeluaran (Bar Chart) disusun 2-kolom berdampingan di layar desktop.
-- **Formatter Sumbu Y Ringkas**: Format angka ribuan (`rb`) dan jutaan (`jt`) serta margin yang presisi agar label tidak terpotong.
-- **Ekspor CSV / Excel**: Mengunduh data rincian harian periode terpilih ke format CSV.
-- **Ekspor PDF Cetak**: Membuka jendela cetak (*print window*) yang diformat dengan CSS cetak profesional, kop nama usaha, ringkasan KPI, dan tabel harian.
-
-### F. Keamanan & Row Level Security (RLS)
-Seluruh 9 tabel PostgreSQL di Supabase dilindungi oleh **Row Level Security (RLS)** dengan Policy aktif:
-- Izin operasi `SELECT`, `INSERT`, `UPDATE`, `DELETE` dikonfigurasi untuk peranan `authenticated` dan `anon`.
-- Menggunakan query `.maybeSingle()` pada client API untuk menangani kondisi data kosong tanpa memicu HTTP 406 (*Not Acceptable*).
+### F. Ekspor Laporan Keuangan (PDF & CSV)
+- **Ekspor CSV / Excel**: Mengunduh rincian data harian periode terpilih ke file CSV.
+- **Ekspor PDF Cetak**: Mengaktifkan jendela cetak (*window print*) yang diformat dengan CSS cetak profesional, kop nama usaha, ringkasan KPI, dan tabel harian.
 
 ---
 
-## 5. Struktur Folder & Komponen
+## 5. DESAIN ANTARMUKA & LAYAR RESPONSIF (UI/UX)
 
-```text
-Ghina-Snack/
-├── src/
-│   ├── app/
-│   │   ├── components/      # Komponen Layout, Navbar, Sidebar & Mobile UI
-│   │   ├── context/         # AuthContext (Sesi Supabase Auth & User State)
-│   │   ├── lib/
-│   │   │   ├── api.ts       # Central API Client & Supabase Data Handler
-│   │   │   ├── export.ts    # Handler Ekspor PDF & CSV
-│   │   │   ├── format.ts    # Formatter Mata Uang (Rupiah) & Tanggal
-│   │   │   └── supabase.ts  # Inisialisasi Supabase JS Client
-│   │   └── pages/           # Komponen Halaman Utama:
-│   │       ├── DashboardPage.tsx
-│   │       ├── PemasukanPage.tsx
-│   │       ├── PengeluaranPage.tsx
-│   │       ├── ProductsPage.tsx
-│   │       ├── CustomersPage.tsx
-│   │       ├── SuppliersPage.tsx
-│   │       ├── LaporanPage.tsx
-│   │       ├── ProfilePage.tsx
-│   │       └── LoginPage.tsx
-│   └── main.tsx             # Root Entry Point Vite & React Router
-├── prisma/
-│   ├── schema.prisma        # Definisi Skema Database Relasional
-│   ├── seed.ts              # Script Seeding Data Awal
-│   └── fix_rls.ts           # Script Otomasi Kebijakan RLS Supabase
-├── DOCUMENTATION.md         # Dokumentasi Lengkap Sistem (File Ini)
-└── README.md                # Panduan Memulai Cepat
-```
+- **Mode Desktop (≥ 768px):** Sidebar Kiri permanen (dapat di-expand/collapse), Header Atas, dan layout workspace 2-kolom.
+- **Mode Mobile (< 768px):**
+  - Header Atas Ringkas tanpa tombol hamburger.
+  - **Fixed Horizontal Scrollable Bottom Bar:** Navigasi bawah berbentuk chip/pill yang berisi seluruh 8 menu utama yang dapat di-scroll kesamping.
+  - **Terkuci Permanen (Fixed & Stuck):** Dilengkapi `fixed bottom-0 inset-x-0 z-50` dan `touch-pan-x` agar bar navigasi bawah tidak pernah bergeser atau ikut terangkat saat halaman di-scroll.
 
 ---
 
-## 6. Audit Log & Tracing
+## 6. KEAMANAN, RLS, & AUDIT TRAIL
 
-Setiap kali pengguna melakukan aksi perubahan data (**CREATE**, **UPDATE**, **DELETE**), sistem membuat entri log permanen di tabel `audit_logs`:
-
-```json
-{
-  "userId": "user-uuid",
-  "action": "CREATE",
-  "entity": "Income",
-  "entityId": "income-uuid",
-  "details": "Mencatat pemasukan: \"Penjualan Reseller Agen Jakarta\" sebesar Rp 2.400.000",
-  "createdAt": "2026-07-22T12:00:00.000Z"
-}
-```
-Entri audit log ini dapat dipantau oleh Administrator untuk transparansi operasional.
+- **Row Level Security (RLS):** Seluruh 9 tabel dilindungi policy `SELECT`, `INSERT`, `UPDATE`, `DELETE` untuk role `authenticated`.
+- **Audit Logs:** Setiap perubahan data mencatat entri otomatis ke tabel `audit_logs` berisi `userId`, `action`, `entity`, `details`, dan timestamp.
 
 ---
 
-## 7. Panduan Instalasi & Maintenance
+## 7. PANDUAN INSTALASI & DEPLOYMENT (VERCEL & SUPABASE)
 
-### A. Persyaratan Sistem
-- **Node.js**: v18.x atau yang lebih baru
-- **Package Manager**: `npm` atau `pnpm`
-
-### B. Menjalankan Aplikasi Lokal
-```bash
+```powershell
 # 1. Install dependencies
 npm install
 
 # 2. Setup Environment Variables (.env)
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
-DATABASE_URL=postgresql://user:pass@host:5432/postgres
+DATABASE_URL=postgresql://postgres:password@db.supabase.co:5432/postgres
 
-# 3. Menjalankan Server Development
+# 3. Jalankan server lokal
 npm run dev
-```
 
-### C. Menjalankan Seed & Fix RLS
-```bash
-# Seed Data Awal ke Database Supabase
-npx prisma db seed
-
-# Menerapkan Policy RLS Lengkap
-npx tsx prisma/fix_rls.ts
+# 4. Push kode ke GitHub (Auto Deploy Vercel)
+git add .
+git commit -m "Deploy update"
+git push origin main
 ```
 
 ---
