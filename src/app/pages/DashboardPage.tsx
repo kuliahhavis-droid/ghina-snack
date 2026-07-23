@@ -100,29 +100,30 @@ const StatCard = ({
   title,
   value,
   icon: Icon,
-  badgeStyle,
+  gradient,
   delay,
 }: {
   title: string;
   value: string;
   icon: ElementType;
-  badgeStyle: string;
+  gradient: string;
   delay: number;
 }) => (
   <motion.div
-    initial={{ opacity: 0, y: 12 }}
+    initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    whileHover={{ y: -2 }}
-    transition={{ duration: 0.2, delay }}
-    className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 hover:border-slate-300 transition-all"
+    whileHover={{ y: -8, scale: 1.01 }}
+    whileTap={{ scale: 0.99 }}
+    transition={{ duration: 0.45, delay, ease: 'easeOut' }}
+    className="bg-white rounded-2xl p-6 shadow-sm border border-[#65C466]/10 hover:shadow-[0_24px_60px_rgba(31,107,58,0.12)] transition-shadow"
   >
     <div className="flex items-start justify-between">
       <div className="flex-1">
-        <p className="text-xs font-medium text-slate-500 mb-1.5">{title}</p>
-        <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{value}</h3>
+        <p className="text-sm text-[#6B7280] mb-2">{title}</p>
+        <h3 className="text-2xl font-bold text-[#1F2937]">{value}</h3>
       </div>
-      <div className={`w-12 h-12 rounded-xl ${badgeStyle} flex items-center justify-center shrink-0`}>
-        <Icon className="w-6 h-6" />
+      <div className={`w-14 h-14 rounded-2xl ${gradient} flex items-center justify-center shadow-md`}>
+        <Icon className="w-7 h-7 text-white" />
       </div>
     </div>
   </motion.div>
@@ -167,7 +168,7 @@ export default function DashboardPage() {
   }
 
   if (error) {
-    return <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-red-600 text-sm font-medium">{error}</div>;
+    return <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-600">{error}</div>;
   }
 
   const chartData = (report?.daily ?? []).map((item) => ({
@@ -204,123 +205,137 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
-          <p className="text-sm text-slate-500">Ringkasan keuangan Ghina Snack</p>
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-[#1F6B3A] mb-2">Dashboard</h1>
+            <p className="text-[#6B7280]">Ringkasan keuangan Ghina Snack Finance</p>
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.03, y: -1, boxShadow: '0 16px 36px rgba(101, 196, 102, 0.18)' }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => void loadDashboard()}
+            className="flex items-center gap-2 rounded-xl border-2 border-[#65C466]/30 bg-white px-4 py-2 text-sm font-medium text-[#1F2937] shadow-sm animate-fade-in"
+          >
+            <RefreshCw className="h-4 w-4 text-[#1F6B3A]" />
+            Refresh
+          </motion.button>
         </div>
-        <button
-          onClick={() => void loadDashboard()}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
-        >
-          <RefreshCw className="h-4 w-4 text-slate-500" />
-          <span>Refresh</span>
-        </button>
-      </div>
+      </motion.div>
 
       {/* Main KPI Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Pemasukan"
           value={currency(stats?.totals.income)}
           icon={TrendingUp}
-          badgeStyle="bg-emerald-50 text-emerald-600"
-          delay={0.05}
+          gradient="bg-gradient-to-br from-[#65C466] to-[#1F6B3A]"
+          delay={0.1}
         />
         <StatCard
           title="Total Pengeluaran"
           value={currency(stats?.totals.expense)}
           icon={TrendingDown}
-          badgeStyle="bg-red-50 text-red-600"
-          delay={0.1}
+          gradient="bg-gradient-to-br from-[#EF4444] to-[#DC2626]"
+          delay={0.2}
         />
         <StatCard
           title="Profit Bersih"
           value={currency(stats?.totals.net)}
           icon={DollarSign}
-          badgeStyle="bg-emerald-50 text-emerald-700"
-          delay={0.15}
+          gradient="bg-gradient-to-br from-[#A3E635] to-[#65C466]"
+          delay={0.3}
         />
         <StatCard
           title="Total Transaksi"
           value={String((stats?.counts.income ?? 0) + (stats?.counts.expense ?? 0))}
           icon={ShoppingBag}
-          badgeStyle="bg-blue-50 text-blue-600"
-          delay={0.2}
+          gradient="bg-gradient-to-br from-[#3B82F6] to-[#1D4ED8]"
+          delay={0.4}
         />
       </div>
 
       {/* Primary Financial Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80">
-          <h3 className="text-base font-semibold text-slate-900 mb-4">Tren Harian Bulan Ini</h3>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-2xl p-6 shadow-sm border border-[#65C466]/10"
+        >
+          <h3 className="text-lg font-semibold text-[#1F2937] mb-4">Tren Harian Bulan Ini</h3>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 5 }}>
               <defs>
                 <linearGradient id="colorPemasukan" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#16a34a" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#16a34a" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#65C466" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#65C466" stopOpacity={0.1} />
                 </linearGradient>
                 <linearGradient id="colorPengeluaran" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#EF4444" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#EF4444" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="day" stroke="#94a3b8" tick={{ fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis dataKey="day" stroke="#6B7280" tick={{ fontSize: 11 }} />
               <YAxis
-                stroke="#94a3b8"
+                stroke="#6B7280"
                 width={72}
                 tick={{ fontSize: 11 }}
                 tickFormatter={(v: number) =>
                   v >= 1_000_000
                     ? `${(v / 1_000_000).toFixed(1)}jt`
                     : v >= 1_000
-                    ? `${(v / 1_000).toFixed(0)}rb`
-                    : String(v)
+                      ? `${(v / 1_000).toFixed(0)}rb`
+                      : String(v)
                 }
               />
               <Tooltip
                 formatter={(value: number, name: string) => [currency(value), name]}
-                contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '13px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+                contentStyle={{ backgroundColor: 'white', border: '1px solid #E5E7EB', borderRadius: '12px', fontSize: '13px' }}
               />
               <Legend wrapperStyle={{ paddingTop: 12, fontSize: 13 }} />
-              <Area type="monotone" dataKey="pemasukan" name="Pemasukan" stroke="#16a34a" strokeWidth={2} fillOpacity={1} fill="url(#colorPemasukan)" />
-              <Area type="monotone" dataKey="pengeluaran" name="Pengeluaran" stroke="#ef4444" strokeWidth={2} fillOpacity={1} fill="url(#colorPengeluaran)" />
+              <Area type="monotone" dataKey="pemasukan" name="Pemasukan" stroke="#65C466" fillOpacity={1} fill="url(#colorPemasukan)" />
+              <Area type="monotone" dataKey="pengeluaran" name="Pengeluaran" stroke="#EF4444" fillOpacity={1} fill="url(#colorPengeluaran)" />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+        </motion.div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80">
-          <h3 className="text-base font-semibold text-slate-900 mb-4">Kategori Pengeluaran</h3>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-2xl p-6 shadow-sm border border-[#65C466]/10"
+        >
+          <h3 className="text-lg font-semibold text-[#1F2937] mb-4">Kategori Pengeluaran</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={categoryData} margin={{ top: 10, right: 20, left: 10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="name" stroke="#94a3b8" tick={{ fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis dataKey="name" stroke="#6B7280" tick={{ fontSize: 11 }} />
               <YAxis
-                stroke="#94a3b8"
+                stroke="#6B7280"
                 width={72}
                 tick={{ fontSize: 11 }}
                 tickFormatter={(v: number) =>
                   v >= 1_000_000
                     ? `${(v / 1_000_000).toFixed(1)}jt`
                     : v >= 1_000
-                    ? `${(v / 1_000).toFixed(0)}rb`
-                    : String(v)
+                      ? `${(v / 1_000).toFixed(0)}rb`
+                      : String(v)
                 }
               />
               <Tooltip
                 formatter={(value: number) => [currency(value), 'Total']}
-                contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '13px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+                contentStyle={{ backgroundColor: 'white', border: '1px solid #E5E7EB', borderRadius: '12px', fontSize: '13px' }}
               />
-              <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+              <Bar dataKey="value" radius={[10, 10, 0, 0]}>
                 {categoryData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </motion.div>
       </div>
 
       {/* ADVANCED FINANCIAL ANALYTICS */}
@@ -361,8 +376,8 @@ export default function DashboardPage() {
                       v >= 1_000_000
                         ? `${(v / 1_000_000).toFixed(1)}jt`
                         : v >= 1_000
-                        ? `${(v / 1_000).toFixed(0)}rb`
-                        : String(v)
+                          ? `${(v / 1_000).toFixed(0)}rb`
+                          : String(v)
                     }
                   />
                   <Tooltip
@@ -440,8 +455,8 @@ export default function DashboardPage() {
                           v >= 1_000_000
                             ? `${(v / 1_000_000).toFixed(1)}jt`
                             : v >= 1_000
-                            ? `${(v / 1_000).toFixed(0)}rb`
-                            : String(v)
+                              ? `${(v / 1_000).toFixed(0)}rb`
+                              : String(v)
                         }
                       />
                       <YAxis type="category" dataKey="name" stroke="#6B7280" width={90} tick={{ fontSize: 11 }} />
