@@ -100,7 +100,7 @@ export default function Layout() {
   const showText = isMobile ? true : sidebarOpen;
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 font-sans text-slate-900 relative">
       {/* Desktop Sidebar (Hidden on Mobile) */}
       {!isMobile && (
         <motion.aside
@@ -175,7 +175,7 @@ export default function Layout() {
 
       {/* Main Content Area */}
       <div
-        className={`flex min-h-screen flex-col transition-all duration-200 ${
+        className={`flex min-h-screen flex-col transition-all duration-200 w-full max-w-full overflow-x-hidden ${
           isMobile
             ? 'pl-0'
             : sidebarOpen
@@ -252,8 +252,8 @@ export default function Layout() {
 
         {/* Mobile Fixed Bottom Navigation Bar */}
         {isMobile && (
-          <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200/90 bg-white/95 px-3 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md">
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5 px-0.5 max-w-full">
+          <nav className="fixed bottom-0 inset-x-0 z-50 w-full border-t border-slate-200/90 bg-white/95 px-3 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md">
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5 px-0.5 max-w-full touch-pan-x">
               {allMobileNavItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
